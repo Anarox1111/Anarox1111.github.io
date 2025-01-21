@@ -1,7 +1,8 @@
 /**
  * Game made by Anarox.
  * 
- * Dragon Repeller Mini-RPG
+ * Dragon Repeller Mini-RPG               
+
  * 
  * Author:    Anarox
  * Created:   11.05.2009
