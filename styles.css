@@ -1,0 +1,304 @@
+body {
+  background-color: #0a0a23;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content min-content 1fr;
+}
+
+.medievalsharp-regular {
+  font-family: "MedievalSharp", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* #headlineSection {
+  margin: 0 auto;
+} */
+
+#headline, #backpackTitle {
+  user-select: none;
+  text-align: center;
+  color: #feac32;
+  text-shadow: 1px 1px #ffcc00;
+  -webkit-text-stroke: 1px black;
+}
+
+#backpackTitle:hover {
+  text-shadow: 2px 2px 2px black;
+}
+
+#text {
+  background-color: #0a0a23;
+  color: #ffffff;
+  padding: 10px;
+}
+
+#game {
+  width: 505px;
+  background-color: #ffffff;
+  color: #ffffff;
+  margin: 1rem auto 0px;
+  padding: 10px;
+}
+
+#controls,
+#stats {
+  display: flex;
+  border: 1px solid #0a0a23;
+  padding: 5px;
+  color: #0a0a23;
+  justify-content: space-between;
+}
+
+#monsterStats {
+  display: flex;
+  border: 1px solid #0a0a23;
+  padding: 5px;
+  color: #ffffff;
+  background-color: #d53b3b;
+  gap: 10px;
+}
+
+#monsterDmgTaken {
+  color: rgb(114, 1, 1);
+}
+
+.stat {
+  padding-right: 10px;
+}
+
+#weaponEquipped {
+  /* transform: rotate(180deg); */
+  display: inline-block;
+  /* margin-left: 230px; */
+  transform-origin: center;
+  font-size: large;
+}
+
+button {
+  cursor: pointer;
+  color: #0a0a23;
+  background-color: #feac32;
+  background-image: linear-gradient(#fecc4c, #ffac33);
+  border: 3px solid #feac32;
+}
+
+button:hover {
+    background-image: linear-gradient(#fecc4c, #db8a11);
+
+}
+
+#monsterIcon {
+  /* transform: rotate(180deg); */
+  display: inline-block;
+  transform-origin: center;
+  font-size: large;
+
+}
+
+#usernameSubmit {
+  padding: 5px;
+}
+
+#usernameSubmit input {
+  padding: 5px;
+  border-radius: 10px;
+}
+
+#usernameSubmit button {
+  padding: 3px;
+  margin-left: 5px;
+  border-radius: 10px;
+}
+
+/* Inventory */
+#backpackMenu {
+  border: 2px solid rgba(0, 0, 0, 0.712);
+  border-radius: 10px;
+  list-style: none;
+  background-color: #0003;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 5px;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100px;
+  text-align: center;
+  background-color: #f9f9f9;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.card:hover {
+  background-color: #8f8e8e83;
+}
+
+.selectedWeaponCard {
+  background-color: #8f8e8e83;
+}
+
+.card .emoji {
+  font-size: 2rem;
+}
+
+.card .title {
+  color: black;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.card .power {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* Class activator */ 
+.hidden {
+  display: none !important;
+}
+
+/* General Tooltip Styling */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Tooltip Text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: -25px; /* Default vertical alignment */
+  left: 105%; /* Default horizontal alignment */
+  margin-left: -24px;
+  opacity: 0; /* Start with hidden tooltip */
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext.extended {
+  width: 220px
+}
+
+
+/* Show Tooltip on Hover */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Tooltip Arrow */
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -5px; /* Position the arrow on the left side */
+  margin-top: -5px; /* Adjust the arrow vertically */
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Styling for Tooltip Heading and Description */
+.tooltip .tooltiptext strong {
+  font-size: 1.1em; /* Head */
+  color: #ffcc00; /* Gold bold text */
+}
+
+.tooltip .tooltiptext br {
+  margin-top: 5px; /* Padding between headline and description */
+}
+
+.tooltip .tooltiptext {
+  font-size: 0.9em; /* Description */
+}
+
+/* -- Toastbar -- */
+
+#toastbar {
+  /* visibility: hidden; */
+  background-color: #849de8;
+  min-width: 25px;
+  text-align: center; /* Centered text */
+  border-radius: 3px; /* Rounded borders */
+  padding: 10px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  left: 50%;
+  
+}
+
+/* -- Changelog Styling -- */
+
+.changelog-anchor {
+  margin: 1rem;
+  align-self: flex-end;
+  justify-self: center;
+}
+
+.changelog-anchor:hover {
+  color: white;
+}
+
+.changelog {
+  background-color: #5864749d;
+  color: #ffffff;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 20px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.changelog-card {
+  border-radius: 20px;
+  background-color: #2d3641;
+  color: #fafafa;
+  width: auto;
+}
+
+.titles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  margin-top: 1rem;
+}
+
+.changelog-title {
+  font-size: x-large;
+  font-weight: bold;
+  user-select: none;
+  text-shadow: 2px 2px 3px black;
+}
+
+.changelog-date {
+  opacity: 0.5;
+}
+
+hr {
+  margin: 1rem;
+  border-color: #feac32;
+}
+

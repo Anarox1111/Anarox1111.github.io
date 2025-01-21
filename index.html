@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>RPG - Dragon Repeller</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <script src="./script.js" type="module"></script>
+</head>
+
+<body>
+    <div id="headlineSection">
+        <h1 id="headline" class="medievalsharp-regular">Dragon Repeller</h1>
+    </div>
+    <div id="game">
+        <!-- Stats Section -->
+        <div id="stats">
+            <span class="stat tooltip">
+                XP: <strong><span id="xpText">0</span> ✨</strong>
+                <!-- XP Tooltip -->
+                <span class="tooltiptext">
+                    <strong>XP</strong><br>
+                    Your current XP. <br> 100 XP is equvialent to 1 level.
+                </span>
+            </span>
+
+            <!-- Gold Tooltip -->
+            <span class="stat tooltip">
+                Gold: <strong><span id="goldText">150</span> 💰</strong>
+                <span class="tooltiptext">
+                    <strong>Gold</strong><br>
+                    Your current gold amount. Use it to buy health and weapons.
+                </span>
+            </span>
+
+            <!-- Health Tooltip -->
+            <span class="stat tooltip">
+                <strong><span id="healthText">100</span> ❤️</strong>
+                <span class="tooltiptext extended">
+                    <strong>Health</strong><br>
+                    Your current health. <br>
+                    Max health cap is based on lvl.<br>
+                    <em>You can now maximum buy <span id="health-cap">200</span> ❤️</em>
+                </span>
+            </span>
+
+            <!-- Weapon Tooltip -->
+            <span class="stat tooltip">
+                <strong><span id="weaponEquipped">🥢</span></strong>
+                <span class="tooltiptext">
+                    <strong>Equipped Weapon</strong><br>
+                    Currently equipped: <strong><span id="weaponEquippedTooltip">Chopsticks 🥢</span></strong><br>
+                    <em>Power: <span id="weaponDmgTooltip">10</span></em>
+                </span>
+            </span>
+        </div>
+
+        <!-- Controls Section -->
+        <div id="controls">
+            <button id="button1">Go to store 🏦</button>
+            <button id="button2">Go to cave 🕯️</button>
+            <button id="button3">Fight dragon 🐉</button>
+        </div>
+
+        <!-- Monster Stats Section -->
+        <div id="monsterStats" class="hidden">
+            <strong><span id="monsterName"></span></strong>
+            <strong><span id="monsterIcon"></span></strong>
+            <strong><span id="monsterHealth"></span></strong>
+            <strong><span id="monsterDmgTaken"></span></strong>
+        </div>
+
+        <!-- Gameplay Text Section -->
+        <div id="text">
+            <!-- Textfield for gameplay, story, and validation -->
+        </div>
+
+        <!-- Username Submit Section -->
+        <div id="usernameSubmit">
+            <!-- Field for entering username that is only available when you create a character -->
+        </div>
+
+        <div id="backpackHead">
+            <h3 id="backpackTitle" onclick="toggleBackpack()">Backpack 🎒</h3>
+            <div id="backpackMenu" class="card-container hidden">
+                
+            </div>
+        </div>
+
+    </div>
+
+    <a href="changelog/" class="changelog-anchor">Changelog</a>
+</body>
+
+</html>

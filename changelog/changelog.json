@@ -1,0 +1,47 @@
+[
+    {
+        "title": "📝 Initial Release",
+        "date": "17.01.2025",
+        "updates": [
+            "Added backpack",
+            "Added XP functionality",
+            "Added bow as weapon."
+        ]
+    },
+    {
+        "title": "📝 Major responsive update + Changelog",
+        "date": "18.01.2025",
+        "updates": [
+            "Backpack stores content",
+            "Changelog page made",
+            "Changelog made by Lassebrus",
+            "Grid and flex adjustments for responsiveness.",
+            "Balanced weapons and monsters to actually be somewhat playable."
+
+        ]
+    },
+    {
+        "title": "📝 TODOS",
+        "date": "19.01.2025",
+        "updates": [
+            "Backpack can select weapon",
+            "Better balancing money / xp",
+            "XP converts to levels",
+            "Each level will give money",
+            "Balanced weapons and monsters to actually be somewhat playable."
+
+        ]
+    },
+    {
+        "title": "📝 Possible next time I can",
+        "date": "---",
+        "updates": [
+            "Make treasure chests that can drop loot",
+            "Create potions",
+            "Fix bossfight with Dragon",
+            "Use localstorage to store actual player data.",
+            "Add more enemies"
+
+        ]
+    }
+]
