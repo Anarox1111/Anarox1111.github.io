@@ -266,9 +266,9 @@ button:hover {
 }
 
 .cards {
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 .changelog-card {
@@ -302,3 +302,8 @@ hr {
   border-color: #feac32;
 }
 
+@media only screen and (min-width: 1000px) {
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(650px, 1fr));
+  }
+}
