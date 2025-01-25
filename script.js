@@ -78,9 +78,9 @@ function generateUniqueId() {
 
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
 const items = [
-  { name: "Apple Juice", type: "consumables", id: generateUniqueId(), healthRegain: 15, icon: "🧃", xpGain: 5},
-  { name: "Apple", type: "consumables", id: generateUniqueId(), healthRegain: 30, icon: "🍎", xpGain: 10},
-  { name: "Health potion", type: "consumables", id: generateUniqueId(), healthRegain: 50, icon: healthPotion, xpGain: 30},
+  { name: "Apple Juice", type: "consumables", id: generateUniqueId(), healthRegain: 10, icon: "🧃", xpGain: 5},
+  { name: "Apple", type: "consumables", id: generateUniqueId(), healthRegain: 20, icon: "🍎", xpGain: 10},
+  { name: "Health potion", type: "consumables", id: generateUniqueId(), healthRegain: 30, icon: healthPotion, xpGain: 30},
 ];
 
 // Foundables that can found after winning a combat.
@@ -606,9 +606,9 @@ function consume(item) {
     healthText.innerText = player.health;
   
     xp(item.xpGain)
-    text.innerText = `You gained ${item.healthRegain} ❤️ from ${item.name} ${item.icon} You earned ${item.xpGain} ✨`
+    text.innerText = `You gained ${item.healthRegain} ❤️ from: ${item.name}. You earned ${item.xpGain} ✨`
     console.log("Before filtering:", inventory);
-console.log("Item to remove:", item);
+    console.log("Item to remove:", item);
     inventory = inventory.filter((invItem) => invItem.id !== item.id);
     updateBackpackUI();
     console.log("After filtering:", inventory);
