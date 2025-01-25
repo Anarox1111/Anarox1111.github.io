@@ -164,6 +164,22 @@ button:hover {
   font-size: 0.9rem;
 }
 
+.card .gain {
+  color: #555;
+}
+
+.card .xpGain {
+  color: black;
+  font-size: small;
+  font-weight: bold;
+}
+
+.card .desc {
+  color: #555;
+  font-style: italic;
+  font-size: small;
+}
+
 /* Class activator */ 
 .hidden {
   display: none !important;
