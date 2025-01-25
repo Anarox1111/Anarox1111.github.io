@@ -92,6 +92,11 @@ if (player.name === "") {
   playernameInput.placeholder = "Enter playername..";
   text.innerHTML = "Hello fellow player 👋 Choose a playername for your character:"
   usernameField.append(playernameInput);
+  usernameField.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      submitPlayer()
+    }
+  })
 
   usernameField.append(buttonUsernameSubmit);
   buttonUsernameSubmit.innerText = "Apply ✅";
