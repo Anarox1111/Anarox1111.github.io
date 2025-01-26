@@ -175,7 +175,7 @@ const foundables = [
 
 // Player
 const player = {
-  name: "Lasse",
+  name: "",
   health: 100,
   maxHealth: 200,
   gold: 50,
@@ -223,7 +223,7 @@ function submitPlayer() {
   }
 
   if (playerName.length < 5 || playerName.length > 12) {
-    text.innerText = "Playername must contain at least 6 characters and at most 12.";
+    text.innerText = "Playername must contain at least 5 characters and at most 12.";
     return;
   }
 
