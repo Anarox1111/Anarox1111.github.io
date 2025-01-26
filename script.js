@@ -32,13 +32,13 @@ const weaponEquipped = document.querySelector("#weaponEquipped");
 const playernameInput = document.createElement("input");
 const usernameField = document.querySelector("#usernameSubmit");
 
-const tooltips = document.querySelectorAll(".tooltip .tooltiptext")
+const tooltips = document.querySelectorAll(".tooltip .tooltiptext");
 const weaponEquippedTooltip = document.querySelector("#weaponEquippedTooltip");
 const weaponDmgTooltip = document.querySelector("#weaponDmgTooltip");
 
 const backpackHead = document.getElementById('backpackHead');
-const backpackButton = document.getElementById('backpackTitle')
-const backpackMenu = document.getElementById('backpackMenu')
+const backpackButton = document.getElementById('backpackTitle');
+const backpackMenu = document.getElementById('backpackMenu');
 
 
 function randomPercentage() {
@@ -60,7 +60,7 @@ const inventory = [ weapons[0] ];
 // Shop prices
 const prices = {
   health: 10
-}
+};
 
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
 const items = [
@@ -85,34 +85,34 @@ const player = {
   currentWeapon: weapons[0],
   xp: 0,
 };
+// fix to update UI
 addGold(0);
-// buyMaxHealth();
 
 // Introduces playername setup if the player hasn't set a name yet.
 if (player.name === "") {
-  lockScreen(true)
+  lockScreen(true);
   playernameInput.placeholder = "Enter playername..";
-  text.innerHTML = "Hello fellow player 👋 Choose a playername for your character:"
+  text.innerHTML = "Hello fellow player 👋 Choose a playername for your character:";
   usernameField.append(playernameInput);
   usernameField.addEventListener('keypress', e => {
     if (e.key === 'Enter') {
-      submitPlayer()
+      submitPlayer();
     }
-  })
+  });
 
   usernameField.append(buttonUsernameSubmit);
   buttonUsernameSubmit.innerText = "Apply ✅";
   buttonUsernameSubmit.onclick = submitPlayer;
 
   window.onload = function() {
-    playernameInput.focus()
+    playernameInput.focus();
   }
 } else {
-  lockScreen(false)
-  updateBackpackUI()
+  lockScreen(false);
+  updateBackpackUI();
   text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
       `the dragon that is preventing people from leaving the town. You are in ` +
-      `the town square. Where do you want to go? Use the buttons above.`
+      `the town square. Where do you want to go? Use the buttons above.`;
 }
 
 function submitPlayer() {
@@ -128,10 +128,10 @@ function submitPlayer() {
         `the dragon that is preventing people from leaving the town. You are in ` +
         `the town square. Where do you want to go? Use the buttons above.`;
     toggleButtons(true, button1, button2, button3);
-    updateBackpackUI()
+    updateBackpackUI();
     controls.classList.remove('hidden');
     backpackHead.classList.remove('hidden');
-    usernameField.remove()
+    usernameField.remove();
 
   }
 }
@@ -169,7 +169,7 @@ const caveEnemies = [
     health: 100,
     defaultHealth: 100,
     "button text": ["Attack 🤺", "Run 🏃"],
-    "button functions": [attackSnake, runAway],
+    "button functions": [attackEnemy, runAway],
     text: "🐍 sss.. The snake hisses aggressively..",
     icon: "🐍",
     lootXp: 50,
@@ -181,7 +181,7 @@ const caveEnemies = [
     health: 200,
     defaultHealth: 200,
     "button text": ["Attack 🤺", "Run 🏃"],
-    "button functions": [attackBeast, runAway],
+    "button functions": [attackEnemy, runAway],
     text: "ARGGGHHHH! WROOOOHA 🐊",
     icon: "🐊",
     lootXp: 100,
@@ -214,7 +214,7 @@ function update(location) {
 
 // Updates "page" with content based on which enemy is presented.
 function updateCaveEnemies(enemy) {
-  enemy.health = enemy.defaultHealth
+  enemy.health = enemy.defaultHealth;
   button1.innerText = enemy["button text"][0];
   button1.onclick = enemy["button functions"][0];
 
@@ -232,7 +232,7 @@ function resetTownButtonVisibility() {
 function resetAllButtonVisibility() {
   allMainButtons.forEach(button => {
     button.style.visibility = "visible";
-  })
+  });
 }
 
 // Visibility switcher-function that can take as many buttons as wanted. Remaining buttons that not are called will apply the opposite.
@@ -246,8 +246,7 @@ function toggleButtons(toggle, ...buttons) {
       if (!buttons.includes(button)) {
         button.style.visibility = toggle ? "hidden" : "visible";
       }
-    })
-  
+    });
 }
 
 // Locks all UI when set to true.
@@ -256,32 +255,33 @@ function lockScreen(isLocked) {
     toggleButtons(false, button1, button2, button3);
     // TODO: Make tooltips hidden when in this state
   } else {
-    toggleButtons(true, button1, button2, button3)
+    toggleButtons(true, button1, button2, button3);
   }
 }
 
 // goFunctions for visitng the selected location.
-function goTown() {
+function gotoLocation(index) {
   resetAllButtonVisibility();
-  update(locations[0]);
+  update(locations[index]);
+}
+function goTown() {
+  gotoLocation(0);
 }
 
 function goStore() {
-  resetTownButtonVisibility();
-  update(locations[1]);
+  gotoLocation(1);
 }
 
 function goCave() {
-  resetTownButtonVisibility();
-  update(locations[2]);
+  gotoLocation(2);
 }
 
 // Boss fight!
 function fightDragon() {
   if  (player.xp >= 1000) {
-    text.innerText = "You won over a dragon that does not exist yet!"
+    text.innerText = "You won over a dragon that does not exist yet!";
   } else {
-    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 1000 ✨ "
+    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 1000 ✨ ";
   }
 }
 
@@ -305,8 +305,10 @@ function buyHealth() {
 
 function buyMaxHealth(e) {
   if (e && e.preventDefault) e.preventDefault();
+
   const hpMissing = player.maxHealth - player.health;
   const maxCanBuy = Math.min(player.gold, hpMissing);
+
   for (let i = 0; i < Math.floor(maxCanBuy / prices.health); i++) {
     buyHealth();
   }
@@ -343,27 +345,25 @@ function buyWeapon() {
   const weaponIcon = player.currentWeapon.icon;
 
   // Update shop price
-  // `Buy weapon 🗡️ (${weapons[1].price}) gold`
   let nextAvailableWeapon = weapons[_currentWeaponIndex + 2];
   let nextWeaponPrice = nextAvailableWeapon ? nextAvailableWeapon.price : 0;
-  locations[1]["button text"][1] = nextWeaponPrice ? `Buy weapon 🗡️ (${nextWeaponPrice} gold)` : 'No more weapons 🗡️ for you!'
+  locations[1]["button text"][1] = nextWeaponPrice ? `Buy weapon 🗡️ (${nextWeaponPrice} gold)` : 'No more weapons 🗡️ for you!';
 
   // Tooltip adjustments
   weaponEquippedTooltip.innerText = player.currentWeapon.name + " " + weaponIcon;
   weaponDmgTooltip.innerText = player.currentWeapon.power;
 
-  text.innerText =
-    `You upgraded from ${oldWeapon.name} ${oldWeapon.icon} to ` +
-    player.currentWeapon.name + ' ' + weaponIcon;
+  text.innerText = `You upgraded from ${oldWeapon.name} ${oldWeapon.icon} to ${player.currentWeapon.name} ${weaponIcon}`;
   weaponEquipped.innerText = weaponIcon;
   player.maxHealth += 50;
   healthCap.innerText = player.maxHealth;
 }
+
 // A function to pass XP to player.
 function xp(xp) {
   player.xp += xp;
-  xpText.innerText = player.xp
-  console.log(player.xp)
+  xpText.innerText = player.xp;
+  // console.log(player.xp)
 }
 
 function addGold(gold) {
@@ -373,21 +373,23 @@ function addGold(gold) {
 
 // MonsterStats red box.
 function showFightView() {
-  toggleMonsterStats()
-  updateMonsterStats()
+  toggleMonsterStats();
+  updateMonsterStats();
 }
 
 // Sends player to the fighting locations.
-function fightSnake() {
-  currentEnemy = caveEnemies[0];
+function fightEnemy(enemy) {
+  currentEnemy = enemy;
   updateCaveEnemies(currentEnemy);
-  showFightView()
+  showFightView();
+}
+
+function fightSnake() {
+  fightEnemy(caveEnemies[0]);
 }
 
 function fightBeast() {
-  currentEnemy = caveEnemies[1];
-  updateCaveEnemies(currentEnemy);
-  showFightView()
+  fightEnemy(caveEnemies[1]);
 }
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -397,7 +399,7 @@ const timer = async () => {
   text.innerText = currentEnemy.text;
 };
 
-function runAway() {
+async function runAway() {
   const rand = Math.round(Math.random());
   const dmg = 50;
   const runDamage = Math.round(dmg * randomPercentage() + 0.7);
@@ -405,32 +407,26 @@ function runAway() {
   if (rand === 1) {
     text.innerText = "You ran away! 🏃 and got 50✨ ";
     xp(50);
-    // Make monster's stats reset based on the monster you are fighting.
 
-    timer().then(() => {
-      toggleMonsterStats();
-      goTown();
-    });
+    // Make monster's stats reset based on the monster you are fighting.
+    await timer();
+    toggleMonsterStats();
+    goTown();
   } else if (player.health > runDamage) {
     player.health -= runDamage;
-    text.innerText =
-      "You failed to run and got attacked and lost " + runDamage + " ❤️";
+    text.innerText = `You failed to run and got attacked and lost ${runDamage} ❤️`;
     healthText.innerText = player.health;
-    timer().then(() => {
-      text.innerText = "You are still fighting..";
-    });
+
+    await timer();
+    text.innerText = "You are still fighting..";
   } else {
     playerDefeated();
   }
 }
 
 // Function for passing the objects to run battleRound-function.
-function attackSnake() {
-  battleRound(player, caveEnemies[0]);
-}
-
-function attackBeast() {
-  battleRound(player, caveEnemies[1]);
+function attackEnemy() {
+  battleRound(player, currentEnemy);
 }
 
 // Monster stats
@@ -439,8 +435,7 @@ function updateMonsterStats() {
   monsterIcon.innerText = currentEnemy.icon;
   monsterHealth.innerText = "HP: " + currentEnemy.health;
 
-  updateMonsterDmgTaken()
-  
+  updateMonsterDmgTaken();
 }
 
 function updateMonsterDmgTaken(damage) {
@@ -462,13 +457,13 @@ function attack(attacker, target) {
     // Securing for negative HP.
     target.health = Math.max(target.health, 0);
     
-    text.innerText = "You attacked with " + attacker.currentWeapon.icon + " and dealt " + damage + " damage."
-    updateMonsterStats()
-    updateMonsterDmgTaken(damage)
-    xp(1)
+    text.innerText = `You attacked with ${attacker.currentWeapon.icon} and dealt ${damage} damage.`;
+    updateMonsterStats();
+    updateMonsterDmgTaken(damage);
+    xp(1);
     
     console.log(
-      `${attacker.name}, attacks ${target.name} with ${playerDamage} and deals ${damage}! ${target.name}s HP: ${target.health} `
+      `${attacker.name}, attacks ${target.name} with ${playerDamage} and deals ${damage}! ${target.name}s HP: ${target.health}`
     );
   } else {
     // Monster attacks.
@@ -481,7 +476,7 @@ function attack(attacker, target) {
     
 
     console.log(
-      `${attacker.name}, attacks ${target.name} with ${attacker.power} and deals ${damage}! ${target.name}s HP: ${target.health} `
+      `${attacker.name}, attacks ${target.name} with ${attacker.power} and deals ${damage}! ${target.name}s HP: ${target.health}`
     );
   }
 }
@@ -511,7 +506,7 @@ function battleRound(player, monster) {
     monster.defaultHealth = Math.round(monster.defaultHealth * 1.1);
     monster.health = monster.defaultHealth;
     console.log("Monster defeated's new defaultHealth: " + monster.health);
-    currentEnemy = null; //
+    currentEnemy = null;
   }
 }
 
@@ -520,7 +515,7 @@ function playerDefeated() {
   healthText.innerText = 0;
   toggleButtons(false, button1, button2, button3);
   gameBoard.style.backgroundColor = "#1a1818";
-  toggleMonsterStats()
+  toggleMonsterStats();
   backpackButton.classList.add("hidden");
   backpackMenu.classList.add('hidden');
 }
@@ -542,38 +537,31 @@ function updateBackpackUI() {
     //test for now.
     if (item.type === "weapon") {
       card.innerHTML = `
-            <div class="emoji">${item.icon}</div>
-            <div class="title">${item.name}</div>
-            <div class="power">Power: ${item.power}</div>
-        `;
+          <div class="emoji">${item.icon}</div>
+          <div class="title">${item.name}</div>
+          <div class="power">Power: ${item.power}</div>
+      `;
 
     } else if (item.type === "consumables") {
       card.innerHTML = `
-            <div class="emoji">${item.icon}</div>
-            <div class="title">${item.name}</div>
-            <div class="gain">Gain: ${item.healthRegain} HP</div>
-            <div class="xpGain">${item.xpGain} ✨</div>
-            
-            <style>
-            .gain, .xpGain{
-            color: black;
-            }
-      </style>
-            `;
+          <div class="emoji">${item.icon}</div>
+          <div class="title">${item.name}</div>
+          <div class="gain">Gain: ${item.healthRegain} HP</div>
+          <div class="xpGain">${item.xpGain} ✨</div>
+      `;
     } else if (item.type === "foundable") {
       card.innerHTML = `
-      <div class="emoji">${item.icon}</div>
-            <div class="title">${item.name}</div>
-            <div class="desc">Gain: ${item.description}</div>
+          <div class="emoji">${item.icon}</div>
+          <div class="title">${item.name}</div>
+          <div class="desc">Gain: ${item.description}</div>
       `;
     }
     
-
-        cards.appendChild(card);
-  })
-
+    cards.appendChild(card);
+  });
 }
 
+// TODO: Fix this. Not working at all!
 function consume() {
   player.health += item.healthRegain;
   healthText += item.healthRegain
@@ -581,7 +569,6 @@ function consume() {
   xp(item.gain)
   console.log("You gained " + item.healthRegain + " from " + item.name)
 }
-
 
 function toggleBackpack() {
   backpackMenu.classList.toggle('hidden');
@@ -591,4 +578,3 @@ function addToInventory(item) {
   inventory.push(item)
   updateBackpackUI()
 }
-
