@@ -8,7 +8,6 @@
  * Created:   11.05.2009
  **/
 
-
 let currentEnemy = null;
 
 const gameBoard = document.querySelector("#game");
@@ -45,40 +44,138 @@ function randomPercentage() {
   return 0.7 + Math.random() * 0.3;
 }
 
-// Weapons
-const weapons = [
-  { name: "Chopsticks", type: "weapon", power: 10, icon: "🥢", xpRequired: 0, price: 0 },
-  { name: "Dagger", type: "weapon", power: 30, icon: "🗡️", xpRequired: 50, price: 50 },
-  { name: "Axe", type: "weapon", power: 50, icon: "🪓", xpRequired: 200, price: 150 },
-  { name: "Bow", type: "weapon", power: 100, icon: "🏹", xpRequired: 500, price: 400 },
-  { name: "Double sword", type: "weapon", power: 200, icon: "⚔️", xpRequired: 1500, price: 750 },
-  { name: "OP Pickaxe", type: "weapon", power: 300, icon: "⛏", xpRequired: 3500, price: 1500 },
-];
+// Classes
+class Weapon {
+  card = document.createElement('div');
+  name = '';
+  power = 0;
+  icon = '';
+  xpRequired = 0;
+  price = 0;
 
-const inventory = [ weapons[0] ];
+  constructor(name, power, icon, xpRequired, price) {
+    this.name = name;
+    this.power = power;
+    this.icon = icon;
+    this.xpRequired = xpRequired;
+    this.price = price;
+    this.createInventoryCard();
+  }
+
+  createInventoryCard() {
+    this.card.classList.add("card");
+
+    this.card.innerHTML = `
+        <div class="emoji">${this.icon}</div>
+        <div class="title">${this.name}</div>
+        <div class="power">Power: ${this.power}</div>
+    `;
+  }
+}
+
+class Consumable {
+  card = document.createElement('div');
+  name = '';
+  healthRegain = 0;
+  icon = '';
+  xpGain = 0;
+  consumed = false;
+
+  constructor(name, healthRegain, icon, xpGain) {
+    this.name = name;
+    this.healthRegain = healthRegain;
+    this.icon = icon;
+    this.xpGain = xpGain;
+    this.createInventoryCard();
+  }
+
+  createInventoryCard() {
+    this.card.classList.add("card");
+
+    this.card.innerHTML = `
+        <div class="emoji">${this.icon}</div>
+        <div class="title">${this.name}</div>
+        <div class="gain">Gain: ${this.healthRegain} HP</div>
+        <div class="xpGain">${this.xpGain} ✨</div>
+    `;
+
+    this.card.addEventListener('click', e => {
+      if (!this.consumed) this.consume();
+    });
+  }
+
+  consume() {
+    this.consumed = true;
+    player.health += this.healthRegain;
+    healthText.innerText = player.health;
+    
+    xp(this.xpGain);
+    console.log("You gained " + this.healthRegain + " from " + this.name);
+
+    updateBackpackUI();
+  }
+}
+
+class Foundable {
+  card = document.createElement('div');
+  name = '';
+  description = '';
+  icon = '';
+  rarity = 0;
+
+  constructor(name, description, icon, rarity) {
+    this.name = name;
+    this.description = description;
+    this.icon = icon;
+    this.rarity = rarity;
+    this.createInventoryCard();
+  }
+
+  createInventoryCard() {
+    this.card.classList.add("card");
+
+    this.card.innerHTML = `
+        <div class="emoji">${this.icon}</div>
+        <div class="title">${this.name}</div>
+        <div class="desc">Gain: ${this.description}</div>
+    `;
+  }
+}
 
 // Shop prices
 const prices = {
   health: 10
 };
 
+// Weapons
+const weapons = [
+  new Weapon('Chopsticks', 10, '🥢', 0, 0),
+  new Weapon('Dagger', 30, '🗡️', 50, 50),
+  new Weapon('Axe', 50, '🪓', 200, 150),
+  new Weapon('Bow', 100, '🏹', 500, 400),
+  new Weapon('Double sword', 200, '⚔️', 1500, 750),
+  new Weapon('OP Pickaxe', 300, '⛏', 3500, 1500)
+]
+
+const inventory = [ weapons[0] ];
+
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
-const items = [
-  { name: "Apple", type: "consumables", healthRegain: 30, icon: "🍎", xpGain: 10, gain: consume},
-  { name: "Health potion", type: "consumables", healthRegain: 100, icon: "🍎", xpGain: 30, gain: consume},
-  { name: "Apple Juice", type: "consumables", healthRegain: 15, icon: "🧃", xpGain: 5, gain: consume},
+const consumables = [
+  () => new Consumable("Apple", 30, "🍎", 10),
+  () => new Consumable("Health potion", 100, "🍎", 30),
+  () => new Consumable("Apple Juice", 15, "🧃", 5)
 ];
 
 // Foundables that can found after winning a combat.
 const foundables = [
-  { name: "Dusty box", type: "foundable", description: "Might contain something", icon: "📦", rarity: 5, open: "openLoot" },
-  { name: "Gift", type: "foundable", description: "Hope you have deserved it", icon: "🎁", open: "openLoot"},
-  { name: "Key", type: "foundable", description: "Can open special crates.", icon: "🗝️", rarity: 20},
+  () => new Foundable("Dusty box", "Might contain something", "📦", 5),
+  () => new Foundable("Gift", "Hope you have deserved it", "🎁", 0),
+  () => new Foundable("Key", "Can open special crates.", "🗝️", 20)
 ];
 
 // Player
 const player = {
-  name: "",
+  name: "Lasse",
   health: 100,
   maxHealth: 200,
   gold: 50,
@@ -110,6 +207,8 @@ if (player.name === "") {
 } else {
   lockScreen(false);
   updateBackpackUI();
+  controls.classList.remove('hidden');
+  backpackHead.classList.remove('hidden');
   text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
       `the dragon that is preventing people from leaving the town. You are in ` +
       `the town square. Where do you want to go? Use the buttons above.`;
@@ -118,22 +217,26 @@ if (player.name === "") {
 function submitPlayer() {
   const playerName = playernameInput.value.trim(); // Trim removes excessive spaces
 
-  if (playerName === "" || playerName.includes(" ")) {
+  if (playerName === '' || playerName.includes(' ')) {
     text.innerText = "Playername cannot contain spaces or be left blank.";
-  } else if (playerName.length < 6 || playerName.length > 12) {
-    text.innerText = "Playername must contain at least 6 characters and at most 12.";
-  } else {
-    player.name = playerName;
-    text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
-        `the dragon that is preventing people from leaving the town. You are in ` +
-        `the town square. Where do you want to go? Use the buttons above.`;
-    toggleButtons(true, button1, button2, button3);
-    updateBackpackUI();
-    controls.classList.remove('hidden');
-    backpackHead.classList.remove('hidden');
-    usernameField.remove();
-
+    return
   }
+
+  if (playerName.length < 5 || playerName.length > 12) {
+    text.innerText = "Playername must contain at least 6 characters and at most 12.";
+    return;
+  }
+
+  player.name = playerName;
+  text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
+      `the dragon that is preventing people from leaving the town. You are in ` +
+      `the town square. Where do you want to go? Use the buttons above.`;
+
+  toggleButtons(true, button1, button2, button3);
+  updateBackpackUI();
+  controls.classList.remove('hidden');
+  backpackHead.classList.remove('hidden');
+  usernameField.remove();
 }
 
 // Location "page"
@@ -340,7 +443,7 @@ function buyWeapon() {
 
   player.currentWeapon = nextWeapon;
   addToInventory(nextWeapon)
-  addToInventory(foundables[0])
+  addToInventory(foundables[0]())
   const oldWeapon = weapons[_currentWeaponIndex];
   const weaponIcon = player.currentWeapon.icon;
 
@@ -361,9 +464,9 @@ function buyWeapon() {
 
 // A function to pass XP to player.
 function xp(xp) {
-  player.xp += xp;
+  player.xp += xp ?? 0;
   xpText.innerText = player.xp;
-  // console.log(player.xp)
+  // console.log(player.xp, xp);
 }
 
 function addGold(gold) {
@@ -497,7 +600,7 @@ function battleRound(player, monster) {
     text.innerText = `You defeated the ${monster.name} 🎉 and gained ${monster.lootXp} ✨`;
     xp(monster.lootXp);
     addGold(monster.lootGold);
-    addToInventory(items[0]);
+    addToInventory(consumables[0]());
     toggleMonsterStats();
     button1.style.visibility = "hidden";
     button2.style.visibility = "hidden";
@@ -527,47 +630,27 @@ function toggleMonsterStats() {
 // Backpack & Inventory
 
 function updateBackpackUI() {
-  const cards = document.getElementById("backpackMenu");
-  cards.innerHTML = "";
+  const backpackCards = [];
 
-  inventory.forEach(item => {
-    const card = document.createElement('div');
-    card.classList.add("card");
-
-    //test for now.
-    if (item.type === "weapon") {
-      card.innerHTML = `
-          <div class="emoji">${item.icon}</div>
-          <div class="title">${item.name}</div>
-          <div class="power">Power: ${item.power}</div>
-      `;
-
-    } else if (item.type === "consumables") {
-      card.innerHTML = `
-          <div class="emoji">${item.icon}</div>
-          <div class="title">${item.name}</div>
-          <div class="gain">Gain: ${item.healthRegain} HP</div>
-          <div class="xpGain">${item.xpGain} ✨</div>
-      `;
-    } else if (item.type === "foundable") {
-      card.innerHTML = `
-          <div class="emoji">${item.icon}</div>
-          <div class="title">${item.name}</div>
-          <div class="desc">Gain: ${item.description}</div>
-      `;
-    }
-    
-    cards.appendChild(card);
-  });
-}
-
-// TODO: Fix this. Not working at all!
-function consume() {
-  player.health += item.healthRegain;
-  healthText += item.healthRegain
+  const invWeapons = inventory.filter(item => item instanceof Weapon);
+  for (let weapon of invWeapons) {
+    backpackCards.push(weapon.card);
+  }
   
-  xp(item.gain)
-  console.log("You gained " + item.healthRegain + " from " + item.name)
+  const invConsumables = inventory.filter(item => item instanceof Consumable);
+  for (let consumable of invConsumables) {
+    // Skip consumed consumables
+    if (consumable.consumed) continue;
+    
+    backpackCards.push(consumable.card);
+  }
+  
+  const invFoundables = inventory.filter(item => item instanceof Foundable);
+  for (let foundable of invFoundables) {
+    backpackCards.push(foundable.card);
+  }
+
+  backpackMenu.replaceChildren(...backpackCards);
 }
 
 function toggleBackpack() {
