@@ -12,6 +12,7 @@
 let currentEnemy = null;
 
 const gameBoard = document.querySelector("#game");
+const controls = document.querySelector('#controls');
 const button1 = document.querySelector("#button1");
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
@@ -35,6 +36,7 @@ const tooltips = document.querySelectorAll(".tooltip .tooltiptext")
 const weaponEquippedTooltip = document.querySelector("#weaponEquippedTooltip");
 const weaponDmgTooltip = document.querySelector("#weaponDmgTooltip");
 
+const backpackHead = document.getElementById('backpackHead');
 const backpackButton = document.getElementById('backpackTitle')
 const backpackMenu = document.getElementById('backpackMenu')
 
@@ -127,6 +129,8 @@ function submitPlayer() {
         `the town square. Where do you want to go? Use the buttons above.`;
     toggleButtons(true, button1, button2, button3);
     updateBackpackUI()
+    controls.classList.remove('hidden');
+    backpackHead.classList.remove('hidden');
     usernameField.remove()
 
   }
