@@ -21,6 +21,7 @@ import {
 let currentEnemy = null;
 
 const gameBoard = document.querySelector("#game");
+const controls = document.querySelector('#controls');
 const button1 = document.querySelector("#button1");
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
@@ -40,12 +41,13 @@ const weaponEquipped = document.querySelector("#weaponEquipped");
 const playernameInput = document.createElement("input");
 const usernameField = document.querySelector("#usernameSubmit");
 
-const tooltips = document.querySelectorAll(".tooltip .tooltiptext")
+const tooltips = document.querySelectorAll(".tooltip .tooltiptext");
 const weaponEquippedTooltip = document.querySelector("#weaponEquippedTooltip");
 const weaponDmgTooltip = document.querySelector("#weaponDmgTooltip");
 
-const backpackButton = document.getElementById('backpackTitle')
-const backpackMenu = document.getElementById('backpackMenu')
+const backpackHead = document.getElementById('backpackHead');
+const backpackButton = document.getElementById('backpackTitle');
+const backpackMenu = document.getElementById('backpackMenu');
 
 let uniqueIdCounter = 0;
 
@@ -54,22 +56,132 @@ function randomPercentage() {
   return 0.7 + Math.random() * 0.3;
 }
 
+// Classes
+class Weapon {
+  card = document.createElement('div');
+  name = '';
+  power = 0;
+  icon = '';
+  xpRequired = 0;
+  price = 0;
+
+  constructor(name, power, icon, xpRequired, price) {
+    this.name = name;
+    this.power = power;
+    this.icon = icon;
+    this.xpRequired = xpRequired;
+    this.price = price;
+    this.createInventoryCard();
+  }
+
+  createInventoryCard() {
+    this.card.classList.add("card");
+
+    this.card.innerHTML = `
+        <div class="emoji">${this.icon}</div>
+        <div class="title">${this.name}</div>
+        <div class="power">Power: ${this.power}</div>
+    `;
+
+    this.card.addEventListener('click', e => {
+      this.equipWeapon();
+    });
+  }
+  
+  equipWeapon() {
+    if(player.currentWeapon === this) {
+      console.log("You already have equipped this weapon");
+    } else {
+      player.currentWeapon = this;
+    }
+  }
+}
+
+class Consumable {
+  card = document.createElement('div');
+  name = '';
+  healthRegain = 0;
+  icon = '';
+  xpGain = 0;
+  consumed = false;
+
+  constructor(name, healthRegain, icon, xpGain) {
+    this.name = name;
+    this.healthRegain = healthRegain;
+    this.icon = icon;
+    this.xpGain = xpGain;
+    this.createInventoryCard();
+  }
+
+  createInventoryCard() {
+    this.card.classList.add("card");
+
+    this.card.innerHTML = `
+        <div class="emoji">${this.icon}</div>
+        <div class="title">${this.name}</div>
+        <div class="gain">Gain: ${this.healthRegain} HP</div>
+        <div class="xpGain">${this.xpGain} ✨</div>
+    `;
+
+    this.card.addEventListener('click', e => {
+      if (!this.consumed) this.consume();
+    });
+  }
+
+  consume() {
+    this.consumed = true;
+    player.health += this.healthRegain;
+    healthText.innerText = player.health;
+    
+    xp(this.xpGain);
+    console.log("You gained " + this.healthRegain + " from " + this.name);
+
+    updateBackpackUI();
+  }
+}
+
+class Foundable {
+  card = document.createElement('div');
+  name = '';
+  description = '';
+  icon = '';
+  rarity = 0;
+
+  constructor(name, description, icon, rarity) {
+    this.name = name;
+    this.description = description;
+    this.icon = icon;
+    this.rarity = rarity;
+    this.createInventoryCard();
+  }
+
+  createInventoryCard() {
+    this.card.classList.add("card");
+
+    this.card.innerHTML = `
+        <div class="emoji">${this.icon}</div>
+        <div class="title">${this.name}</div>
+        <div class="desc">Gain: ${this.description}</div>
+    `;
+  }
+}
+
 // Weapons
 const weapons = [
-  { name: "Chopsticks", type: "weapon", power: 10, icon: "🥢", xpRequired: 0, price: 0 },
-  { name: "Dagger", type: "weapon", power: 30, icon: "🗡️", xpRequired: 50, price: 50 },
-  { name: "Axe", type: "weapon", power: 50, icon: "🪓", xpRequired: 300, price: 200 },
-  { name: "Bow", type: "weapon", power: 100, icon: "🏹", xpRequired: 800, price: 500 },
-  { name: "Double sword", type: "weapon", power: 200, icon: "⚔️", xpRequired: 2000, price: 800 },
-  { name: "OP Pickaxe", type: "weapon", power: 300, icon: "⛏️", xpRequired: 4000, price: 1500 },
+  new Weapon('Chopsticks', 10, '🥢', 0, 0),
+  new Weapon('Dagger', 30, '🗡️', 50, 50),
+  new Weapon('Axe', 50, '🪓', 300, 200),
+  new Weapon('Bow', 100, '🏹', 800, 500),
+  new Weapon('Double sword', 200, '⚔️', 2000, 800),
+  new Weapon('OP Pickaxe', 300, '⛏️', 4000, 1500)
 ];
 
-let inventory = [ weapons[0] ];
+const inventory = [ weapons[0] ];
 
 // Shop prices 
 const prices = {
   health: 10
-}
+};
 
 // Generating uniqueID
 function generateUniqueId() {
@@ -77,19 +189,19 @@ function generateUniqueId() {
 }
 
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
-const items = [
-  { name: "Apple Juice", type: "consumables", id: generateUniqueId(), healthRegain: 10, icon: "🧃", xpGain: 5},
-  { name: "Apple", type: "consumables", id: generateUniqueId(), healthRegain: 25, icon: "🍎", xpGain: 10},
-  { name: "Health potion", type: "consumables", id: generateUniqueId(), healthRegain: 50, icon: healthPotion, xpGain: 30},
+const consumables = [
+  () => new Consumable("Apple Juice", 10, "🧃", 5),
+  () => new Consumable("Apple", 25, "🍎", 10),
+  () => new Consumable("Health potion", 50, "🍎", 30),
 ];
 
 // Foundables that can found after winning a combat.
 const foundables = [
-  { name: "Dusty box", type: "foundable", description: "Might contain something", icon: "📦", open: "openLoot", rarity: 5},
-  { name: "Gift", type: "foundable", description: "Hope you have deserved it", icon: "🎁", open: "openLoot"},
-  { name: "Key", type: "foundable", description: "Can open special crates.", icon: "🗝️", rarity: 15},
-  { name: "Common Crate", type: "foundable", description: "Commonly uncommon..", icon: commonCrate, open: "openLoot", rarity: 20},
-  { name: "Rare Crate", type: "foundable", description: "Uncommonly rare..", icon: rareCrate, open: "openLoot", rarity: 30 },
+  () => new Foundable("Dusty box", "Might contain something", "📦", 5),
+  () => new Foundable("Gift", "Hope you have deserved it", "🎁", -1),
+  () => new Foundable("Key", "Can open special crates", "🗝️", 15),
+  () => new Foundable("Common Crate", "Commonly uncommon..", commonCrate, 20),
+  () => new Foundable("Rare Crate", "Uncommonly rare..", rareCrate, 30),
 ];
 
 // Player
@@ -101,51 +213,61 @@ const player = {
   currentWeapon: weapons[0],
   xp: 0,
 };
+// fix to update UI
 addGold(0);
-// buyMaxHealth();
 
 // Introduces playername setup if the player hasn't set a name yet.
 if (player.name === "") {
-  lockScreen(true)
-  backpackButton.classList.add("hidden");
+  lockScreen(true);
   playernameInput.placeholder = "Enter playername..";
-  text.innerHTML = "Hello fellow player 👋 Choose a playername for your character:"
+  text.innerHTML = "Hello fellow player 👋 Choose a playername for your character:";
   usernameField.append(playernameInput);
+  usernameField.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      submitPlayer();
+    }
+  });
 
   usernameField.append(buttonUsernameSubmit);
   buttonUsernameSubmit.innerText = "Apply ✅";
   buttonUsernameSubmit.onclick = submitPlayer;
 
   window.onload = function() {
-    playernameInput.focus()
+    playernameInput.focus();
   }
 } else {
-  lockScreen(false)
-  updateBackpackUI()
-  backpackButton.classList.remove("hidden");
+  lockScreen(false);
+  updateBackpackUI();
+  controls.classList.remove('hidden');
+  backpackHead.classList.remove('hidden');
   text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
       `the dragon that is preventing people from leaving the town. You are in ` +
-      `the town square. Where do you want to go? Use the buttons above.`
+      `the town square. Where do you want to go? Use the buttons above.`;
 }
 
 function submitPlayer() {
   const playerName = playernameInput.value.trim(); // Trim removes excessive spaces
 
-  if (playerName === "" || playerName.includes(" ")) {
+  if (playerName === '' || playerName.includes(' ')) {
     text.innerText = "Playername cannot contain spaces or be left blank.";
-  } else if (playerName.length < 6 || playerName.length > 12) {
-    text.innerText = "Playername must contain at least 6 characters and at most 12.";
-  } else {
-    player.name = playerName;
-    text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
-        `the dragon that is preventing people from leaving the town. You are in ` +
-        `the town square. Where do you want to go? Use the buttons above.`;
-    toggleButtons(true, button1, button2, button3);
-    updateBackpackUI()
-    usernameField.remove()
-  backpackButton.classList.remove("hidden");
-
+    return
   }
+
+  if (playerName.length < 5 || playerName.length > 12) {
+    text.innerText = "Playername must contain at least 5 characters and at most 12.";
+    return;
+  }
+
+  player.name = playerName;
+  text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
+      `the dragon that is preventing people from leaving the town. You are in ` +
+      `the town square. Where do you want to go? Use the buttons above.`;
+
+  toggleButtons(true, button1, button2, button3);
+  updateBackpackUI();
+  controls.classList.remove('hidden');
+  backpackHead.classList.remove('hidden');
+  usernameField.remove();
 }
 
 // Location "page"
@@ -159,9 +281,9 @@ const locations = [
   {
     name: "store",
     "button text": [
-      "Buy 10 health ❤️ (10 gold)",
-      `Buy weapon 🗡️ (${weapons[1].price} gold)`,
-      "Go to town square 🏙️",
+      "Buy 10 ❤️ (10 gold)",
+      `Buy 🗡️ (${weapons[1].price} gold)`,
+      "Town square 🏙️",
     ],
     "button functions": [buyHealth, buyWeapon, goTown],
     text: "You entered the store 🏦",
@@ -181,7 +303,7 @@ const caveEnemies = [
     health: 100,
     defaultHealth: 100,
     "button text": ["Attack 🤺", "Run 🏃"],
-    "button functions": [attackSnake, runAway],
+    "button functions": [attackEnemy, runAway],
     text: "🐍 sss.. The snake hisses aggressively..",
     icon: "🐍",
     lootXp: 50,
@@ -193,7 +315,7 @@ const caveEnemies = [
     health: 200,
     defaultHealth: 200,
     "button text": ["Attack 🤺", "Run 🏃"],
-    "button functions": [attackBeast, runAway],
+    "button functions": [attackEnemy, runAway],
     text: "ARGGGHHHH! WROOOOHA 🐊",
     icon: "🐊",
     lootXp: 100,
@@ -226,7 +348,7 @@ function update(location) {
 
 // Updates "page" with content based on which enemy is presented.
 function updateCaveEnemies(enemy) {
-  enemy.health = enemy.defaultHealth
+  enemy.health = enemy.defaultHealth;
   button1.innerText = enemy["button text"][0];
   button1.onclick = enemy["button functions"][0];
 
@@ -244,7 +366,7 @@ function resetTownButtonVisibility() {
 function resetAllButtonVisibility() {
   allMainButtons.forEach(button => {
     button.style.visibility = "visible";
-  })
+  });
 }
 
 // Visibility switcher-function that can take as many buttons as wanted. Remaining buttons that not are called will apply the opposite.
@@ -258,8 +380,7 @@ function toggleButtons(toggle, ...buttons) {
       if (!buttons.includes(button)) {
         button.style.visibility = toggle ? "hidden" : "visible";
       }
-    })
-  
+    });
 }
 
 // Locks all UI when set to true.
@@ -268,32 +389,33 @@ function lockScreen(isLocked) {
     toggleButtons(false, button1, button2, button3);
     // TODO: Make tooltips hidden when in this state
   } else {
-    toggleButtons(true, button1, button2, button3)
+    toggleButtons(true, button1, button2, button3);
   }
 }
 
 // goFunctions for visitng the selected location.
-function goTown() {
+function gotoLocation(index) {
   resetAllButtonVisibility();
-  update(locations[0]);
+  update(locations[index]);
+}
+function goTown() {
+  gotoLocation(0);
 }
 
 function goStore() {
-  resetTownButtonVisibility();
-  update(locations[1]);
+  gotoLocation(1);
 }
 
 function goCave() {
-  resetTownButtonVisibility();
-  update(locations[2]);
+  gotoLocation(2);
 }
 
 // Boss fight!
 function fightDragon() {
-  if  (player.xp >= 10000) {
-    text.innerText = "You won over a dragon that does not exist yet!"
+  if (player.xp >= 10000) {
+    text.innerText = "You won over a dragon that does not exist yet!";
   } else {
-    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 10K ✨ "
+    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 10K ✨";
   }
 }
 
@@ -317,8 +439,10 @@ function buyHealth() {
 
 function buyMaxHealth(e) {
   if (e && e.preventDefault) e.preventDefault();
+
   const hpMissing = player.maxHealth - player.health;
   const maxCanBuy = Math.min(player.gold, hpMissing);
+
   for (let i = 0; i < Math.floor(maxCanBuy / prices.health); i++) {
     buyHealth();
   }
@@ -349,32 +473,29 @@ function buyWeapon() {
   addGold(-nextWeapon.price);
 
   player.currentWeapon = nextWeapon;
-  addToInventory(nextWeapon)
   const oldWeapon = weapons[_currentWeaponIndex];
   const weaponIcon = player.currentWeapon.icon;
 
   // Update shop price
-  // `Buy weapon 🗡️ (${weapons[1].price}) gold`
   let nextAvailableWeapon = weapons[_currentWeaponIndex + 2];
   let nextWeaponPrice = nextAvailableWeapon ? nextAvailableWeapon.price : 0;
-  locations[1]["button text"][1] = nextWeaponPrice ? `Buy weapon 🗡️ (${nextWeaponPrice} gold)` : 'No more weapons 🗡️ for you!'
+  locations[1]["button text"][1] = nextWeaponPrice ? `Buy 🗡️ (${nextWeaponPrice} gold)` : 'No more 🗡️ for you!';
 
   // Tooltip adjustments
   weaponEquippedTooltip.innerText = player.currentWeapon.name + " " + weaponIcon;
   weaponDmgTooltip.innerText = player.currentWeapon.power;
 
-  text.innerText =
-    `You upgraded from ${oldWeapon.name} ${oldWeapon.icon} to ` +
-    player.currentWeapon.name + ' ' + weaponIcon;
+  text.innerText = `You upgraded from ${oldWeapon.name} ${oldWeapon.icon} to ${player.currentWeapon.name} ${weaponIcon}`;
   weaponEquipped.innerText = weaponIcon;
   player.maxHealth += 50;
   healthCap.innerText = player.maxHealth;
 }
+
 // A function to pass XP to player.
 function xp(xp) {
-  player.xp += xp;
-  xpText.innerText = player.xp
-  console.log(player.xp)
+  player.xp += xp ?? 0;
+  xpText.innerText = player.xp;
+  // console.log(player.xp, xp);
 }
 
 function addGold(gold) {
@@ -384,21 +505,23 @@ function addGold(gold) {
 
 // MonsterStats red box.
 function showFightView() {
-  toggleMonsterStats()
-  updateMonsterStats()
+  toggleMonsterStats();
+  updateMonsterStats();
 }
 
 // Sends player to the fighting locations.
-function fightSnake() {
-  currentEnemy = caveEnemies[0];
+function fightEnemy(enemy) {
+  currentEnemy = enemy;
   updateCaveEnemies(currentEnemy);
-  showFightView()
+  showFightView();
+}
+
+function fightSnake() {
+  fightEnemy(caveEnemies[0]);
 }
 
 function fightBeast() {
-  currentEnemy = caveEnemies[1];
-  updateCaveEnemies(currentEnemy);
-  showFightView()
+  fightEnemy(caveEnemies[1]);
 }
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -408,7 +531,7 @@ const timer = async () => {
   text.innerText = currentEnemy.text;
 };
 
-function runAway() {
+async function runAway() {
   const rand = Math.round(Math.random());
   const dmg = 50;
   const runDamage = Math.round(dmg * randomPercentage() + 0.7);
@@ -417,32 +540,26 @@ function runAway() {
     text.innerText = "You ran away! 🏃 and got 50 ✨ ";
     xp(50);
     randomLoot(foundables);
-    // Make monster's stats reset based on the monster you are fighting.
 
-    timer().then(() => {
-      toggleMonsterStats();
-      goTown();
-    });
+    // Make monster's stats reset based on the monster you are fighting.
+    await timer();
+    toggleMonsterStats();
+    goTown();
   } else if (player.health > runDamage) {
     player.health -= runDamage;
-    text.innerText =
-      "You failed to run and got attacked and lost " + runDamage + " ❤️";
+    text.innerText = `You failed to run and got attacked and lost ${runDamage} ❤️`;
     healthText.innerText = player.health;
-    timer().then(() => {
-      text.innerText = "You are still fighting..";
-    });
+
+    await timer();
+    text.innerText = "You are still fighting..";
   } else {
     playerDefeated();
   }
 }
 
 // Function for passing the objects to run battleRound-function.
-function attackSnake() {
-  battleRound(player, caveEnemies[0]);
-}
-
-function attackBeast() {
-  battleRound(player, caveEnemies[1]);
+function attackEnemy() {
+  battleRound(player, currentEnemy);
 }
 
 // Monster stats
@@ -451,8 +568,7 @@ function updateMonsterStats() {
   monsterIcon.innerText = currentEnemy.icon;
   monsterHealth.innerText = "HP: " + currentEnemy.health;
 
-  updateMonsterDmgTaken()
-  
+  updateMonsterDmgTaken();
 }
 
 function updateMonsterDmgTaken(damage) {
@@ -474,13 +590,13 @@ function attack(attacker, target) {
     // Securing for negative HP.
     target.health = Math.max(target.health, 0);
     
-    text.innerText = "You attacked with " + attacker.currentWeapon.icon + " and dealt " + damage + " damage."
-    updateMonsterStats()
-    updateMonsterDmgTaken(damage)
-    xp(1)
+    text.innerText = `You attacked with ${attacker.currentWeapon.icon} and dealt ${damage} damage.`;
+    updateMonsterStats();
+    updateMonsterDmgTaken(damage);
+    xp(1);
     
     console.log(
-      `${attacker.name}, attacks ${target.name} with ${playerDamage} and deals ${damage}! ${target.name}s HP: ${target.health} `
+      `${attacker.name}, attacks ${target.name} with ${playerDamage} and deals ${damage}! ${target.name}s HP: ${target.health}`
     );
   } else {
     // Monster attacks.
@@ -493,7 +609,7 @@ function attack(attacker, target) {
     
 
     console.log(
-      `${attacker.name}, attacks ${target.name} with ${attacker.power} and deals ${damage}! ${target.name}s HP: ${target.health} `
+      `${attacker.name}, attacks ${target.name} with ${attacker.power} and deals ${damage}! ${target.name}s HP: ${target.health}`
     );
   }
 }
@@ -517,7 +633,7 @@ function battleRound(player, monster) {
       randomLoot(foundables);
     }
     
-    randomLoot(items);
+    randomLoot(consumables);
     
     xp(monster.lootXp);
     addGold(monster.lootGold);
@@ -529,7 +645,7 @@ function battleRound(player, monster) {
     monster.defaultHealth = Math.round(monster.defaultHealth * 1.1);
     monster.health = monster.defaultHealth;
     console.log("Monster defeated's new defaultHealth: " + monster.health);
-    currentEnemy = null; //
+    currentEnemy = null;
   }
 }
 
@@ -541,7 +657,9 @@ function playerDefeated() {
   backpackButton.classList.add('hidden')
 
   gameBoard.style.backgroundColor = "#1a1818";
-  toggleMonsterStats()
+  toggleMonsterStats();
+  backpackButton.classList.add("hidden");
+  backpackMenu.classList.add('hidden');
 }
 
 function toggleMonsterStats() {
@@ -551,96 +669,40 @@ function toggleMonsterStats() {
 // Backpack & Inventory
 
 function updateBackpackUI() {
-  const cards = document.getElementById("backpackMenu");
-  cards.innerHTML = "";
+  const backpackCards = [];
 
-  inventory.forEach(item => {
-    const card = document.createElement('div');
-    card.classList.add("card");
-
-    switch(item.type) {
-      case "weapon":
-        card.innerHTML = `
-            <div class="emoji">${item.icon}</div>
-            <div class="title">${item.name}</div>
-            <div class="power">Power: ${item.power}</div>
-        `;
-        card.addEventListener("click", () => equipWeapon(item));
-        break;
-
-      case "consumables":
-        card.innerHTML = `
-          <div class="emoji">${item.icon}</div>
-          <div class="title">${item.name}</div>
-          <div class="gain">Gain: ${item.healthRegain} HP</div>
-          <div class="xpGain">${item.xpGain} ✨</div>
-        `;
-        card.addEventListener("click", () => consume(item));
-        break;
-      
-      case "foundable":
-        card.innerHTML = `
-          <div class="emoji">${item.icon}</div>
-          <div class="title">${item.name}</div>
-          <div class="desc">${item.description}</div>
-        `;
-        break;
-      
-      default:
-        card.innerHTML = `
-          <div class="emoji">❓</div>
-          <div class="title">Unknown Item</div>
-        `;
-        break;
-    }
+  const invWeapons = inventory.filter(item => item instanceof Weapon);
+  for (let weapon of invWeapons) {
+    backpackCards.push(weapon.card);
+  }
+  
+  const invConsumables = inventory.filter(item => item instanceof Consumable);
+  for (let consumable of invConsumables) {
+    // Skip consumed consumables
+    if (consumable.consumed) continue;
     
-
-        cards.appendChild(card);
-  })
-
-}
-
-function consume(item) {
-  if (player.health != player.maxHealth) {
-    player.health = Math.min(player.health + item.healthRegain, player.maxHealth);
-    healthText.innerText = player.health;
-  
-    xp(item.xpGain)
-    text.innerText = `You gained ${item.healthRegain} ❤️ from: ${item.name}. You earned ${item.xpGain} ✨`
-    console.log("Before filtering:", inventory);
-    console.log("Item to remove:", item);
-    inventory = inventory.filter((invItem) => invItem.id !== item.id);
-    updateBackpackUI();
-    console.log("After filtering:", inventory);
-  } else {
-    text.innerText = "You already have max capacity! ❤️";
+    backpackCards.push(consumable.card);
   }
   
-}
-
-function equipWeapon(weapon) {
-  if(player.currentWeapon === weapon) {
-    console.log("You already have equipped this weapon");
-  } else {
-    player.currentWeapon = weapon;
+  const invFoundables = inventory.filter(item => item instanceof Foundable);
+  for (let foundable of invFoundables) {
+    backpackCards.push(foundable.card);
   }
-  
+
+  backpackMenu.replaceChildren(...backpackCards);
 }
 
 // Adds a random consumable-item to the inventory, RNG 1/10
-function randomLoot(o) {
+function randomLoot(items) {
   const randomNum = Math.floor(Math.random() * 10 ) + 1;
   
-
-  var randomItem = o[Math.floor(Math.random()*o.length)];
+  var randomItem = items[Math.floor(Math.random()*items.length)];
 
   if(randomNum === 10) {
     addToInventory(randomItem);
     text.innerHTML = `You found: ${randomItem.name}`
   }
-
 }
-
 
 function toggleBackpack() {
   backpackMenu.classList.toggle('hidden');
@@ -650,4 +712,3 @@ function addToInventory(item) {
   inventory.push(item)
   updateBackpackUI()
 }
-

@@ -7,7 +7,7 @@
  **/
 const cards = document.querySelector('.cards');
 
-function addCard(obj) {
+function addCard(updateItem) {
     // <div class="changelog-card">
     const card = document.createElement('div');
     card.classList.add('changelog-card');
@@ -15,14 +15,28 @@ function addCard(obj) {
     // <div class="titles">
     const cardHeader = document.createElement('div');
     cardHeader.classList.add('titles');
-    // <span class="changelog-title"></span>
+    // <span class="changelog-title">
     const header = document.createElement('span');
     header.classList.add('changelog-title');
-    header.innerText = obj.title;
+    
+    // <span class="changelog-title-icon"></span>
+    const headerIcon = document.createElement('span');
+    headerIcon.classList.add('changelog-title-icon');
+    headerIcon.innerHTML = updateItem.icon;
+    // <span class="changelog-title-icon"></span>
+    const headerText = document.createElement('span');
+    headerText.classList.add('changelog-title-text');
+    headerText.innerText = updateItem.title;
+    // <span class="changelog-title-icon"></span>
+    const headerAuthor = document.createElement('span');
+    headerAuthor.classList.add('changelog-title-author');
+    headerAuthor.innerText = updateItem.author;
+    // </span>
+    header.append(headerIcon, headerText, headerAuthor);
     // <span class="changelog-date"></span>
     const date = document.createElement('span');
     date.classList.add('changelog-date');
-    date.innerText = obj.date;
+    date.innerText = updateItem.date;
     // </div
     cardHeader.append(header, date);
 
@@ -36,7 +50,7 @@ function addCard(obj) {
     const ul = document.createElement('ul');
     // <li>
     const lis = [];
-    for (let update of obj.updates) {
+    for (let update of updateItem.updates) {
         const li = document.createElement('li');
         li.innerText = update;
         lis.push(li);
@@ -49,7 +63,9 @@ function addCard(obj) {
 
     card.append(cardHeader, hr, updates);
     // </div>
-    cards.append(card);
+    
+    //cards.append(card);
+    return card;
 }
 
 async function getData() {
@@ -60,12 +76,19 @@ async function getData() {
             throw new Error(`Response status: ${response.status}`);
         }
     
-        let json = await response.json();
-        json = json.reverse();
+        const json = await response.json();
+        const updates = json.reverse();
         
-        for (let obj of json) {
-            addCard(obj);
+        const cardElements = [];
+        for (let update of updates) {
+            if (!update.done && location.hostname === 'anarox.no') {
+                // Skip on public host if update isn't released yet
+                continue;
+            }
+
+            cardElements.push(addCard(update));
         }
+        cards.replaceChildren(...cardElements);
     } catch (error) {
         console.error(error.message);
     }
