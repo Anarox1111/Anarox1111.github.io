@@ -473,6 +473,7 @@ function buyWeapon() {
   addGold(-nextWeapon.price);
 
   player.currentWeapon = nextWeapon;
+  addToInventory(nextWeapon);
   const oldWeapon = weapons[_currentWeaponIndex];
   const weaponIcon = player.currentWeapon.icon;
 
