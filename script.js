@@ -58,15 +58,15 @@ function randomPercentage() {
 const weapons = [
   { name: "Chopsticks", type: "weapon", power: 10, icon: "🥢", xpRequired: 0, price: 0 },
   { name: "Dagger", type: "weapon", power: 30, icon: "🗡️", xpRequired: 50, price: 50 },
-  { name: "Axe", type: "weapon", power: 50, icon: "🪓", xpRequired: 300, price: 150 },
-  { name: "Bow", type: "weapon", power: 100, icon: "🏹", xpRequired: 800, price: 450 },
-  { name: "Double sword", type: "weapon", power: 200, icon: "⚔️", xpRequired: 2500, price: 800 },
-  { name: "OP Pickaxe", type: "weapon", power: 300, icon: "⛏️", xpRequired: 5000, price: 1500 },
+  { name: "Axe", type: "weapon", power: 50, icon: "🪓", xpRequired: 300, price: 200 },
+  { name: "Bow", type: "weapon", power: 100, icon: "🏹", xpRequired: 800, price: 500 },
+  { name: "Double sword", type: "weapon", power: 200, icon: "⚔️", xpRequired: 2000, price: 800 },
+  { name: "OP Pickaxe", type: "weapon", power: 300, icon: "⛏️", xpRequired: 4000, price: 1500 },
 ];
 
 let inventory = [ weapons[0] ];
 
-// Shop prices
+// Shop prices 
 const prices = {
   health: 10
 }
@@ -79,8 +79,8 @@ function generateUniqueId() {
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
 const items = [
   { name: "Apple Juice", type: "consumables", id: generateUniqueId(), healthRegain: 10, icon: "🧃", xpGain: 5},
-  { name: "Apple", type: "consumables", id: generateUniqueId(), healthRegain: 20, icon: "🍎", xpGain: 10},
-  { name: "Health potion", type: "consumables", id: generateUniqueId(), healthRegain: 30, icon: healthPotion, xpGain: 30},
+  { name: "Apple", type: "consumables", id: generateUniqueId(), healthRegain: 25, icon: "🍎", xpGain: 10},
+  { name: "Health potion", type: "consumables", id: generateUniqueId(), healthRegain: 50, icon: healthPotion, xpGain: 30},
 ];
 
 // Foundables that can found after winning a combat.
