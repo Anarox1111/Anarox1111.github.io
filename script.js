@@ -155,7 +155,7 @@ const weapons = [
   new Weapon('Bow', 100, '🏹', 500, 400),
   new Weapon('Double sword', 200, '⚔️', 1500, 750),
   new Weapon('OP Pickaxe', 300, '⛏', 3500, 1500)
-]
+];
 
 const inventory = [ weapons[0] ];
 
@@ -250,9 +250,9 @@ const locations = [
   {
     name: "store",
     "button text": [
-      "Buy 10 health ❤️ (10 gold)",
-      `Buy weapon 🗡️ (${weapons[1].price} gold)`,
-      "Go to town square 🏙️",
+      "Buy 10 ❤️ (10 gold)",
+      `Buy 🗡️ (${weapons[1].price} gold)`,
+      "Town square 🏙️",
     ],
     "button functions": [buyHealth, buyWeapon, goTown],
     text: "You entered the store 🏦",
@@ -443,14 +443,14 @@ function buyWeapon() {
 
   player.currentWeapon = nextWeapon;
   addToInventory(nextWeapon)
-  addToInventory(foundables[0]())
+  // addToInventory(foundables[0]())
   const oldWeapon = weapons[_currentWeaponIndex];
   const weaponIcon = player.currentWeapon.icon;
 
   // Update shop price
   let nextAvailableWeapon = weapons[_currentWeaponIndex + 2];
   let nextWeaponPrice = nextAvailableWeapon ? nextAvailableWeapon.price : 0;
-  locations[1]["button text"][1] = nextWeaponPrice ? `Buy weapon 🗡️ (${nextWeaponPrice} gold)` : 'No more weapons 🗡️ for you!';
+  locations[1]["button text"][1] = nextWeaponPrice ? `Buy 🗡️ (${nextWeaponPrice} gold)` : 'No more 🗡️ for you!';
 
   // Tooltip adjustments
   weaponEquippedTooltip.innerText = player.currentWeapon.name + " " + weaponIcon;
