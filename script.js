@@ -8,6 +8,16 @@
  * Created:   11.05.2009
  **/
 
+import {
+  healthPotion,
+  commonCrate,
+  rareCrate,
+  legendaryCrate,
+  blueScepter,
+  gravityBlade,
+  dragonTrident
+} from './constants.js';
+
 let currentEnemy = null;
 
 const gameBoard = document.querySelector("#game");
@@ -38,6 +48,8 @@ const weaponDmgTooltip = document.querySelector("#weaponDmgTooltip");
 const backpackHead = document.getElementById('backpackHead');
 const backpackButton = document.getElementById('backpackTitle');
 const backpackMenu = document.getElementById('backpackMenu');
+
+let uniqueIdCounter = 0;
 
 
 function randomPercentage() {
@@ -70,6 +82,18 @@ class Weapon {
         <div class="title">${this.name}</div>
         <div class="power">Power: ${this.power}</div>
     `;
+
+    this.card.addEventListener('click', e => {
+      this.equipWeapon();
+    });
+  }
+  
+  equipWeapon() {
+    if(player.currentWeapon === this) {
+      console.log("You already have equipped this weapon");
+    } else {
+      player.currentWeapon = this;
+    }
   }
 }
 
@@ -142,35 +166,42 @@ class Foundable {
   }
 }
 
-// Shop prices
-const prices = {
-  health: 10
-};
-
 // Weapons
 const weapons = [
   new Weapon('Chopsticks', 10, '🥢', 0, 0),
   new Weapon('Dagger', 30, '🗡️', 50, 50),
-  new Weapon('Axe', 50, '🪓', 200, 150),
-  new Weapon('Bow', 100, '🏹', 500, 400),
-  new Weapon('Double sword', 200, '⚔️', 1500, 750),
-  new Weapon('OP Pickaxe', 300, '⛏', 3500, 1500)
+  new Weapon('Axe', 50, '🪓', 300, 200),
+  new Weapon('Bow', 100, '🏹', 800, 500),
+  new Weapon('Double sword', 200, '⚔️', 2000, 800),
+  new Weapon('OP Pickaxe', 300, '⛏️', 4000, 1500)
 ];
 
 const inventory = [ weapons[0] ];
 
+// Shop prices 
+const prices = {
+  health: 10
+};
+
+// Generating uniqueID
+function generateUniqueId() {
+  return ++uniqueIdCounter;
+}
+
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
 const consumables = [
-  () => new Consumable("Apple", 30, "🍎", 10),
-  () => new Consumable("Health potion", 100, "🍎", 30),
-  () => new Consumable("Apple Juice", 15, "🧃", 5)
+  () => new Consumable("Apple Juice", 10, "🧃", 5),
+  () => new Consumable("Apple", 25, "🍎", 10),
+  () => new Consumable("Health potion", 50, "🍎", 30),
 ];
 
 // Foundables that can found after winning a combat.
 const foundables = [
   () => new Foundable("Dusty box", "Might contain something", "📦", 5),
-  () => new Foundable("Gift", "Hope you have deserved it", "🎁", 0),
-  () => new Foundable("Key", "Can open special crates.", "🗝️", 20)
+  () => new Foundable("Gift", "Hope you have deserved it", "🎁", -1),
+  () => new Foundable("Key", "Can open special crates", "🗝️", 15),
+  () => new Foundable("Common Crate", "Commonly uncommon..", commonCrate, 20),
+  () => new Foundable("Rare Crate", "Uncommonly rare..", rareCrate, 30),
 ];
 
 // Player
@@ -381,10 +412,10 @@ function goCave() {
 
 // Boss fight!
 function fightDragon() {
-  if  (player.xp >= 1000) {
+  if (player.xp >= 10000) {
     text.innerText = "You won over a dragon that does not exist yet!";
   } else {
-    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 1000 ✨ ";
+    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 10K ✨";
   }
 }
 
@@ -442,8 +473,6 @@ function buyWeapon() {
   addGold(-nextWeapon.price);
 
   player.currentWeapon = nextWeapon;
-  addToInventory(nextWeapon)
-  // addToInventory(foundables[0]())
   const oldWeapon = weapons[_currentWeaponIndex];
   const weaponIcon = player.currentWeapon.icon;
 
@@ -508,8 +537,9 @@ async function runAway() {
   const runDamage = Math.round(dmg * randomPercentage() + 0.7);
 
   if (rand === 1) {
-    text.innerText = "You ran away! 🏃 and got 50✨ ";
+    text.innerText = "You ran away! 🏃 and got 50 ✨ ";
     xp(50);
+    randomLoot(foundables);
 
     // Make monster's stats reset based on the monster you are fighting.
     await timer();
@@ -598,9 +628,15 @@ function battleRound(player, monster) {
     }
   } else {
     text.innerText = `You defeated the ${monster.name} 🎉 and gained ${monster.lootXp} ✨`;
+    
+    if (player.xp > 3000) {
+      randomLoot(foundables);
+    }
+    
+    randomLoot(consumables);
+    
     xp(monster.lootXp);
     addGold(monster.lootGold);
-    addToInventory(consumables[0]());
     toggleMonsterStats();
     button1.style.visibility = "hidden";
     button2.style.visibility = "hidden";
@@ -616,7 +652,10 @@ function battleRound(player, monster) {
 function playerDefeated() {
   text.innerText = "💀 You have been defeated! 💀 Game over.";
   healthText.innerText = 0;
-  toggleButtons(false, button1, button2, button3);
+  lockScreen(true);
+  backpackMenu.classList.add('hidden')
+  backpackButton.classList.add('hidden')
+
   gameBoard.style.backgroundColor = "#1a1818";
   toggleMonsterStats();
   backpackButton.classList.add("hidden");
@@ -651,6 +690,18 @@ function updateBackpackUI() {
   }
 
   backpackMenu.replaceChildren(...backpackCards);
+}
+
+// Adds a random consumable-item to the inventory, RNG 1/10
+function randomLoot(items) {
+  const randomNum = Math.floor(Math.random() * 10 ) + 1;
+  
+  var randomItem = items[Math.floor(Math.random()*items.length)];
+
+  if(randomNum === 10) {
+    addToInventory(randomItem);
+    text.innerHTML = `You found: ${randomItem.name}`
+  }
 }
 
 function toggleBackpack() {
