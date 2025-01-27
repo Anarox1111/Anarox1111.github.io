@@ -8,6 +8,15 @@
  * Created:   11.05.2009
  **/
 
+import {
+  healthPotion,
+  commonCrate,
+  rareCrate,
+  legendaryCrate,
+  blueScepter,
+  gravityBlade,
+  dragonTrident
+} from './constants.js';
 
 let currentEnemy = null;
 
@@ -38,6 +47,8 @@ const weaponDmgTooltip = document.querySelector("#weaponDmgTooltip");
 const backpackButton = document.getElementById('backpackTitle')
 const backpackMenu = document.getElementById('backpackMenu')
 
+let uniqueIdCounter = 0;
+
 
 function randomPercentage() {
   return 0.7 + Math.random() * 0.3;
@@ -47,31 +58,38 @@ function randomPercentage() {
 const weapons = [
   { name: "Chopsticks", type: "weapon", power: 10, icon: "🥢", xpRequired: 0, price: 0 },
   { name: "Dagger", type: "weapon", power: 30, icon: "🗡️", xpRequired: 50, price: 50 },
-  { name: "Axe", type: "weapon", power: 50, icon: "🪓", xpRequired: 200, price: 150 },
-  { name: "Bow", type: "weapon", power: 100, icon: "🏹", xpRequired: 500, price: 400 },
-  { name: "Double sword", type: "weapon", power: 200, icon: "⚔️", xpRequired: 1500, price: 750 },
-  { name: "OP Pickaxe", type: "weapon", power: 300, icon: "⛏", xpRequired: 3500, price: 1500 },
+  { name: "Axe", type: "weapon", power: 50, icon: "🪓", xpRequired: 300, price: 200 },
+  { name: "Bow", type: "weapon", power: 100, icon: "🏹", xpRequired: 800, price: 500 },
+  { name: "Double sword", type: "weapon", power: 200, icon: "⚔️", xpRequired: 2000, price: 800 },
+  { name: "OP Pickaxe", type: "weapon", power: 300, icon: "⛏️", xpRequired: 4000, price: 1500 },
 ];
 
-const inventory = [ weapons[0] ];
+let inventory = [ weapons[0] ];
 
-// Shop prices
+// Shop prices 
 const prices = {
   health: 10
 }
 
+// Generating uniqueID
+function generateUniqueId() {
+  return ++uniqueIdCounter;
+}
+
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
 const items = [
-  { name: "Apple", type: "consumables", healthRegain: 30, icon: "🍎", xpGain: 10, gain: consume},
-  { name: "Health potion", type: "consumables", healthRegain: 100, icon: "🍎", xpGain: 30, gain: consume},
-  { name: "Apple Juice", type: "consumables", healthRegain: 15, icon: "🧃", xpGain: 5, gain: consume},
+  { name: "Apple Juice", type: "consumables", id: generateUniqueId(), healthRegain: 10, icon: "🧃", xpGain: 5},
+  { name: "Apple", type: "consumables", id: generateUniqueId(), healthRegain: 25, icon: "🍎", xpGain: 10},
+  { name: "Health potion", type: "consumables", id: generateUniqueId(), healthRegain: 50, icon: healthPotion, xpGain: 30},
 ];
 
 // Foundables that can found after winning a combat.
 const foundables = [
-  { name: "Dusty box", type: "foundable", description: "Might contain something", icon: "📦", rarity: 5, open: "openLoot" },
+  { name: "Dusty box", type: "foundable", description: "Might contain something", icon: "📦", open: "openLoot", rarity: 5},
   { name: "Gift", type: "foundable", description: "Hope you have deserved it", icon: "🎁", open: "openLoot"},
-  { name: "Key", type: "foundable", description: "Can open special crates.", icon: "🗝️", rarity: 20},
+  { name: "Key", type: "foundable", description: "Can open special crates.", icon: "🗝️", rarity: 15},
+  { name: "Common Crate", type: "foundable", description: "Commonly uncommon..", icon: commonCrate, open: "openLoot", rarity: 20},
+  { name: "Rare Crate", type: "foundable", description: "Uncommonly rare..", icon: rareCrate, open: "openLoot", rarity: 30 },
 ];
 
 // Player
@@ -89,6 +107,7 @@ addGold(0);
 // Introduces playername setup if the player hasn't set a name yet.
 if (player.name === "") {
   lockScreen(true)
+  backpackButton.classList.add("hidden");
   playernameInput.placeholder = "Enter playername..";
   text.innerHTML = "Hello fellow player 👋 Choose a playername for your character:"
   usernameField.append(playernameInput);
@@ -103,6 +122,7 @@ if (player.name === "") {
 } else {
   lockScreen(false)
   updateBackpackUI()
+  backpackButton.classList.remove("hidden");
   text.innerText = `Welcome, ${player.name}! to Dragon Repeller. You must defeat ` +
       `the dragon that is preventing people from leaving the town. You are in ` +
       `the town square. Where do you want to go? Use the buttons above.`
@@ -123,6 +143,7 @@ function submitPlayer() {
     toggleButtons(true, button1, button2, button3);
     updateBackpackUI()
     usernameField.remove()
+  backpackButton.classList.remove("hidden");
 
   }
 }
@@ -269,10 +290,10 @@ function goCave() {
 
 // Boss fight!
 function fightDragon() {
-  if  (player.xp >= 1000) {
+  if  (player.xp >= 10000) {
     text.innerText = "You won over a dragon that does not exist yet!"
   } else {
-    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 1000 ✨ "
+    text.innerText = "You are unfortunately not strong enough to fight the boss yet.. You need 10K ✨ "
   }
 }
 
@@ -329,7 +350,6 @@ function buyWeapon() {
 
   player.currentWeapon = nextWeapon;
   addToInventory(nextWeapon)
-  addToInventory(foundables[0])
   const oldWeapon = weapons[_currentWeaponIndex];
   const weaponIcon = player.currentWeapon.icon;
 
@@ -394,8 +414,9 @@ function runAway() {
   const runDamage = Math.round(dmg * randomPercentage() + 0.7);
 
   if (rand === 1) {
-    text.innerText = "You ran away! 🏃 and got 50✨ ";
+    text.innerText = "You ran away! 🏃 and got 50 ✨ ";
     xp(50);
+    randomLoot(foundables);
     // Make monster's stats reset based on the monster you are fighting.
 
     timer().then(() => {
@@ -491,9 +512,15 @@ function battleRound(player, monster) {
     }
   } else {
     text.innerText = `You defeated the ${monster.name} 🎉 and gained ${monster.lootXp} ✨`;
+    
+    if (player.xp > 3000) {
+      randomLoot(foundables);
+    }
+    
+    randomLoot(items);
+    
     xp(monster.lootXp);
     addGold(monster.lootGold);
-    addToInventory(items[0]);
     toggleMonsterStats();
     button1.style.visibility = "hidden";
     button2.style.visibility = "hidden";
@@ -509,11 +536,12 @@ function battleRound(player, monster) {
 function playerDefeated() {
   text.innerText = "💀 You have been defeated! 💀 Game over.";
   healthText.innerText = 0;
-  toggleButtons(false, button1, button2, button3);
+  lockScreen(true);
+  backpackMenu.classList.add('hidden')
+  backpackButton.classList.add('hidden')
+
   gameBoard.style.backgroundColor = "#1a1818";
   toggleMonsterStats()
-  backpackButton.classList.add("hidden");
-  backpackMenu.classList.add('hidden');
 }
 
 function toggleMonsterStats() {
@@ -530,33 +558,40 @@ function updateBackpackUI() {
     const card = document.createElement('div');
     card.classList.add("card");
 
-    //test for now.
-    if (item.type === "weapon") {
-      card.innerHTML = `
+    switch(item.type) {
+      case "weapon":
+        card.innerHTML = `
             <div class="emoji">${item.icon}</div>
             <div class="title">${item.name}</div>
             <div class="power">Power: ${item.power}</div>
         `;
+        card.addEventListener("click", () => equipWeapon(item));
+        break;
 
-    } else if (item.type === "consumables") {
-      card.innerHTML = `
-            <div class="emoji">${item.icon}</div>
-            <div class="title">${item.name}</div>
-            <div class="gain">Gain: ${item.healthRegain} HP</div>
-            <div class="xpGain">${item.xpGain} ✨</div>
-            
-            <style>
-            .gain, .xpGain{
-            color: black;
-            }
-      </style>
-            `;
-    } else if (item.type === "foundable") {
-      card.innerHTML = `
-      <div class="emoji">${item.icon}</div>
-            <div class="title">${item.name}</div>
-            <div class="desc">Gain: ${item.description}</div>
-      `;
+      case "consumables":
+        card.innerHTML = `
+          <div class="emoji">${item.icon}</div>
+          <div class="title">${item.name}</div>
+          <div class="gain">Gain: ${item.healthRegain} HP</div>
+          <div class="xpGain">${item.xpGain} ✨</div>
+        `;
+        card.addEventListener("click", () => consume(item));
+        break;
+      
+      case "foundable":
+        card.innerHTML = `
+          <div class="emoji">${item.icon}</div>
+          <div class="title">${item.name}</div>
+          <div class="desc">${item.description}</div>
+        `;
+        break;
+      
+      default:
+        card.innerHTML = `
+          <div class="emoji">❓</div>
+          <div class="title">Unknown Item</div>
+        `;
+        break;
     }
     
 
@@ -565,12 +600,45 @@ function updateBackpackUI() {
 
 }
 
-function consume() {
-  player.health += item.healthRegain;
-  healthText += item.healthRegain
+function consume(item) {
+  if (player.health != player.maxHealth) {
+    player.health = Math.min(player.health + item.healthRegain, player.maxHealth);
+    healthText.innerText = player.health;
   
-  xp(item.gain)
-  console.log("You gained " + item.healthRegain + " from " + item.name)
+    xp(item.xpGain)
+    text.innerText = `You gained ${item.healthRegain} ❤️ from: ${item.name}. You earned ${item.xpGain} ✨`
+    console.log("Before filtering:", inventory);
+    console.log("Item to remove:", item);
+    inventory = inventory.filter((invItem) => invItem.id !== item.id);
+    updateBackpackUI();
+    console.log("After filtering:", inventory);
+  } else {
+    text.innerText = "You already have max capacity! ❤️";
+  }
+  
+}
+
+function equipWeapon(weapon) {
+  if(player.currentWeapon === weapon) {
+    console.log("You already have equipped this weapon");
+  } else {
+    player.currentWeapon = weapon;
+  }
+  
+}
+
+// Adds a random consumable-item to the inventory, RNG 1/10
+function randomLoot(o) {
+  const randomNum = Math.floor(Math.random() * 10 ) + 1;
+  
+
+  var randomItem = o[Math.floor(Math.random()*o.length)];
+
+  if(randomNum === 10) {
+    addToInventory(randomItem);
+    text.innerHTML = `You found: ${randomItem.name}`
+  }
+
 }
 
 
