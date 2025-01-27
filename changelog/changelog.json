@@ -1,28 +1,51 @@
 [
     {
-        "title": "📝 Initial Release",
+        "icon": "📝",
+        "author": "Anarox",
+        "title": "Initial Release",
         "date": "17.01.2025",
+        "done": true,
         "updates": [
             "Added backpack",
             "Added XP functionality",
-            "Added bow as weapon."
+            "Added bow as a weapon"
         ]
     },
     {
-        "title": "📝 Major responsive update + Changelog",
+        "icon": "📝",
+        "author": "Anarox",
+        "title": "Major responsive update + Changelog",
         "date": "18.01.2025",
+        "done": true,
         "updates": [
             "Backpack stores content",
             "Changelog page made",
-            "Changelog made by Lassebrus",
-            "Grid and flex adjustments for responsiveness.",
-            "Balanced weapons and monsters to actually be somewhat playable."
-
+            "Changelog made - by Lassebrus",
+            "Grid and flex adjustments for responsiveness",
+            "Balanced weapons and monsters to actually be somewhat playable"
         ]
     },
     {
-        "title": "📝 TODOS",
-        "date": "19.01.2025",
+        "icon": "📝",
+        "author": "Lassebrus",
+        "title": "Performance and design improvements",
+        "date": "26.01.2025",
+        "done": true,
+        "updates": [
+            "You can now press enter instead of the apply button when signing in",
+            "Removed content from the signin page. You don't need to see your currently empty backpack",
+            "Improved performance. It's now so fast, you won't notice the difference! :D",
+            "Your backpack will be sorted. Weapons, consumables, then foundables",
+            "The backpack got a better design now, finally using the space properly",
+            "Major changelog tweaks. Show author and hide future updates"
+        ]
+    },
+    {
+        "icon": "📝",
+        "author": "Anarox",
+        "title": "TODOS",
+        "date": "Expected: ---",
+        "done": false,
         "updates": [
             "Backpack can select weapon",
             "Better balancing money / xp",
@@ -33,8 +56,11 @@
         ]
     },
     {
-        "title": "📝 Possible next time I can",
-        "date": "---",
+        "icon": "📝",
+        "author": "Anarox",
+        "title": "Possible next time I can",
+        "date": "Expected: ---",
+        "done": false,
         "updates": [
             "Make treasure chests that can drop loot",
             "Create potions",

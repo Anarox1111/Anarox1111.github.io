@@ -19,6 +19,7 @@ body {
 } */
 
 #headline, #backpackTitle {
+  -webkit-user-select: none;
   user-select: none;
   text-align: center;
   color: #feac32;
@@ -137,6 +138,7 @@ button:hover {
   background-color: #f9f9f9;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -290,10 +292,31 @@ button:hover {
 }
 
 .changelog-title {
-  font-size: x-large;
-  font-weight: bold;
+  display: grid;
+  gap: .25rem .5rem;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  -webkit-user-select: none;
   user-select: none;
   text-shadow: 2px 2px 3px black;
+}
+
+.changelog-title-icon {
+  grid-area: 1 / 1 / -1 / 2;
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.changelog-title-text {
+  font-size: x-large;
+}
+
+.changelog-title-author {
+  font-size: medium;
+}
+
+.changelog-title-author::before {
+  content: '- by ';
 }
 
 .changelog-date {
