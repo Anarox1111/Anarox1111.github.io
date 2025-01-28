@@ -700,7 +700,7 @@ function randomLoot(items) {
   var randomItem = items[Math.floor(Math.random()*items.length)];
 
   if(randomNum === 10) {
-    addToInventory(randomItem);
+    addToInventory(randomItem());
     text.innerHTML = `You found: ${randomItem.name}`
   }
 }
