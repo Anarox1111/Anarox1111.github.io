@@ -697,10 +697,10 @@ function updateBackpackUI() {
 function randomLoot(items) {
   const randomNum = Math.floor(Math.random() * 10 ) + 1;
   
-  var randomItem = items[Math.floor(Math.random()*items.length)];
+  var randomItem = items[Math.floor(Math.random()*items.length)]();
 
   if(randomNum === 10) {
-    addToInventory(randomItem());
+    addToInventory(randomItem);
     text.innerHTML = `You found: ${randomItem.name}`
   }
 }
