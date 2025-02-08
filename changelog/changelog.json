@@ -69,5 +69,16 @@
             "Add more enemies"
 
         ]
+    },
+    {
+        "icon": "📝",
+        "author":"Anarox",
+        "title": "Balance update",
+        "date": "07.02.2025",
+        "done": true,
+        "updates": [
+            "Balance updates that includes: you start with no coins, weapon prices, XP requirements, Enemy loot",
+            "You now gotta pay more attention to your HP, but in return enemies drop more money the more you fight."
+        ]
     }
 ]

@@ -3,7 +3,7 @@
  * Script for managing JSON objects introduced to UI in .changelog/index.html
  * 
  * Author:    Lassebrus
- * Created:   11.05.2009
+ * Created:   24.01.2025
  **/
 const cards = document.querySelector('.cards');
 
