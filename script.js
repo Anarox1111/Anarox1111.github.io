@@ -5,7 +5,7 @@
 
  * 
  * Author:    Anarox
- * Created:   11.05.2009
+ * Created:   21.01.25
  **/
 
 import {
@@ -53,7 +53,7 @@ let uniqueIdCounter = 0;
 
 
 function randomPercentage() {
-  return 0.7 + Math.random() * 0.3;
+  return 0.4 + Math.random() * 0.6;
 }
 
 // Classes
@@ -146,6 +146,7 @@ class Foundable {
   description = '';
   icon = '';
   rarity = 0;
+  opened = false;
 
   constructor(name, description, icon, rarity) {
     this.name = name;
@@ -163,17 +164,28 @@ class Foundable {
         <div class="title">${this.name}</div>
         <div class="desc">Gain: ${this.description}</div>
     `;
+
+    this.card.addEventListener('click', e => {
+      if (!this.opened) this.openLoot();
+    });
+  }
+
+  openLoot() {
+    this.opened = true;
+    addGold(100);
+    updateBackpackUI();
   }
 }
 
 // Weapons
 const weapons = [
-  new Weapon('Chopsticks', 10, '🥢', 0, 0),
-  new Weapon('Dagger', 30, '🗡️', 50, 50),
-  new Weapon('Axe', 50, '🪓', 300, 200),
-  new Weapon('Bow', 100, '🏹', 800, 500),
-  new Weapon('Double sword', 200, '⚔️', 2000, 800),
-  new Weapon('OP Pickaxe', 300, '⛏️', 4000, 1500)
+  new Weapon('Chopsticks', 20, '🥢', 0, 0),
+  new Weapon('Dagger', 35, '🗡️', 200, 100),
+  new Weapon('Axe', 55, '🪓', 600, 300),
+  new Weapon('Bow', 130, '🏹', 1800, 800),
+  new Weapon('Double sword', 300, '⚔️', 3500, 2000),
+  new Weapon('OP Pickaxe', 700, '⛏️', 6000, 4000),
+  new Weapon('Robo-Arm', 2000, '🦾', 10e3, 10e3)
 ];
 
 const inventory = [ weapons[0] ];
@@ -182,11 +194,6 @@ const inventory = [ weapons[0] ];
 const prices = {
   health: 10
 };
-
-// Generating uniqueID
-function generateUniqueId() {
-  return ++uniqueIdCounter;
-}
 
 // Items that can be found in crates, gifts or boxes. 🧪🍎🍵🔮✨ 🍊🧃🥤
 const consumables = [
@@ -209,7 +216,7 @@ const player = {
   name: "",
   health: 100,
   maxHealth: 200,
-  gold: 50,
+  gold: 0,
   currentWeapon: weapons[0],
   xp: 0,
 };
@@ -300,26 +307,28 @@ const caveEnemies = [
   {
     name: "Snake",
     power: 8,
-    health: 100,
-    defaultHealth: 100,
+    health: 70,
+    defaultHealth: 70,
     "button text": ["Attack 🤺", "Run 🏃"],
     "button functions": [attackEnemy, runAway],
     text: "🐍 sss.. The snake hisses aggressively..",
     icon: "🐍",
     lootXp: 50,
-    lootGold: 75
+    lootGold: 40,
+    lootGoldIncrement: 5
   },
   {
     name: "Beast",
     power: 17,
-    health: 200,
-    defaultHealth: 200,
+    health: 150,
+    defaultHealth: 150,
     "button text": ["Attack 🤺", "Run 🏃"],
     "button functions": [attackEnemy, runAway],
     text: "ARGGGHHHH! WROOOOHA 🐊",
     icon: "🐊",
     lootXp: 100,
-    lootGold: 150
+    lootGold: 80,
+    lootGoldIncrement: 10
   },
 ];
 
@@ -486,6 +495,7 @@ function buyWeapon() {
   weaponEquippedTooltip.innerText = player.currentWeapon.name + " " + weaponIcon;
   weaponDmgTooltip.innerText = player.currentWeapon.power;
 
+  goStore();
   text.innerText = `You upgraded from ${oldWeapon.name} ${oldWeapon.icon} to ${player.currentWeapon.name} ${weaponIcon}`;
   weaponEquipped.innerText = weaponIcon;
   player.maxHealth += 50;
@@ -644,6 +654,7 @@ function battleRound(player, monster) {
     resetTownButtonVisibility();
 
     monster.defaultHealth = Math.round(monster.defaultHealth * 1.1);
+    monster.lootGold += monster.lootGoldIncrement;
     monster.health = monster.defaultHealth;
     console.log("Monster defeated's new defaultHealth: " + monster.health);
     currentEnemy = null;
@@ -687,6 +698,9 @@ function updateBackpackUI() {
   
   const invFoundables = inventory.filter(item => item instanceof Foundable);
   for (let foundable of invFoundables) {
+    // Skip opened foundables
+    if (foundable.opened) continue;
+
     backpackCards.push(foundable.card);
   }
 
